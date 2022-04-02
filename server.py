@@ -1,13 +1,6 @@
 #!/usr/bin/env python
 
 """
-Columbia's COMS W4111.003 Introduction to Databases
-Example Webserver
-
-To run locally:
-
-    python server.py
-
 Go to http://localhost:8111 in your browser.
 
 A debugger such as "pdb" may be helpful for debugging.
@@ -24,29 +17,11 @@ tmpl_dir = os.path.join(os.path.dirname(
 app = Flask(__name__, template_folder=tmpl_dir)
 
 
-#
-# The following is a dummy URI that does not connect to a valid database. You will need to modify it to connect to your Part 2 database in order to use the data.
-#
-# XXX: The URI should be in the format of:
-#
-#     postgresql://USER:PASSWORD@104.196.152.219/proj1part2
-#
-# For example, if you had username biliris and password foobar, then the following line would be:
-#
-#     DATABASEURI = "postgresql://biliris:foobar@104.196.152.219/proj1part2"
-#
-DATABASEURI = "postgresql://user:password@104.196.152.219/proj1part2"
-
-
-#
-# This line creates a database engine that knows how to connect to the URI above.
-#
+DATABASEURI = "postgresql://maj2187:5379@35.211.155.104/proj1part2"
 engine = create_engine(DATABASEURI)
 
-#
 # Example of running queries in your database
-# Note that this will probably not work if you already have a table named 'test' in your database, containing meaningful data. This is only an example showing you how to run queries in your database using SQLAlchemy.
-#
+
 engine.execute("""CREATE TABLE IF NOT EXISTS test (
   id serial,
   name text
@@ -116,18 +91,13 @@ def index():
     #
     # example of a database query
     #
-    cursor = g.conn.execute("SELECT name FROM test")
+    cursor = g.conn.execute("SELECT * FROM users")
     names = []
     for result in cursor:
-        names.append(result['name'])  # can also be accessed using result[0]
+        # can also be accessed using result[0]
+        names.append(result['first_name'])
     cursor.close()
 
-    #
-    # Flask uses Jinja templates, which is an extension to HTML where you can
-    # pass data to a template and dynamically generate HTML based on the data
-    # (you can think of it as simple PHP)
-    # documentation: https://realpython.com/blog/python/primer-on-jinja-templating/
-    #
     # You can see an example template in templates/index.html
     #
     # context are the variables that are passed to the template.
@@ -166,23 +136,18 @@ def index():
 #
 
 
-@app.route('/another')
+@app.route('/landing')
 def another():
-    return render_template("another.html")
-
+    return render_template("landing.html")
 
 # Example of adding new data to the database
+
+
 @app.route('/add', methods=['POST'])
 def add():
     name = request.form['name']
     g.conn.execute('INSERT INTO test VALUES (NULL, ?)', name)
     return redirect('/')
-
-
-@app.route('/login')
-def login():
-    abort(401)
-    this_is_never_executed()
 
 
 if __name__ == "__main__":
