@@ -22,12 +22,12 @@ engine = create_engine(DATABASEURI)
 
 # Example of running queries in your database
 
-engine.execute("""CREATE TABLE IF NOT EXISTS test (
-  id serial,
-  name text
-);""")
-engine.execute(
-    """INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace');""")
+# engine.execute("""CREATE TABLE IF NOT EXISTS test (
+#   id serial,
+#   name text
+# );""")
+# engine.execute(
+#     """INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace');""")
 
 
 @app.before_request
@@ -126,22 +126,57 @@ def index():
     #
     return render_template("index.html", **context)
 
-#
-# This is an example of a different path.  You can see it at:
-#
-#     localhost:8111/another
-#
-# Notice that the function name is another() rather than index()
-# The functions for each app.route need to have different names
-#
-
 
 @app.route('/landing')
-def another():
+def landing():
     return render_template("landing.html")
+
+@app.route('/landing_fail')
+def landing_fail():
+    return render_template("landing_fail.html")
+
+@app.route('/create_account')
+def create_account():
+    return render_template("create_account.html")
+
+@app.route('/survey_page.html')
+def survey_page():
+    return render_template("survey_page.html")
+
+@app.route('/profile_main.html')
+def profile_main():
+    return render_template("profile_main.html")
 
 # Example of adding new data to the database
 
+@app.route('/login', methods=['POST'])
+def login():
+    email = request.form['email']
+    password = request.form['password']
+    print("logging in {} {}".format(email, password))
+    cursor = g.conn.execute("SELECT * FROM users WHERE email = %s", email)
+    if cursor.rowcount == 0:
+        print("no user found")
+        return redirect("landing_fail")
+    else:
+        print("user found")
+        for result in cursor:
+            if result['user_password'] == password:
+                print("password correct")
+                #get user id
+                user_id = result['user_id']
+                #check if the user has done survey
+                cursor = g.conn.execute("SELECT * FROM inputs WHERE user_id = %s", user_id)
+                if cursor.rowcount == 0:
+                    print("survey done")
+                    return render_template("profile_main.html", user_id=user_id)
+                else:
+                    print("survey not done")
+                    return render_template("survey_page.html", user_id=user_id)
+            else:
+                print("password incorrect")
+                return render_template("landing_fail.html")
+    return redirect('/')
 
 @app.route('/add', methods=['POST'])
 def add():
@@ -159,18 +194,6 @@ if __name__ == "__main__":
     @click.argument('HOST', default='0.0.0.0')
     @click.argument('PORT', default=8111, type=int)
     def run(debug, threaded, host, port):
-        """
-        This function handles command line parameters.
-        Run the server using:
-
-            python server.py
-
-        Show the help text using:
-
-            python server.py --help
-
-        """
-
         HOST, PORT = host, port
         print("running on %s:%d" % (HOST, PORT))
         app.run(host=HOST, port=PORT, debug=debug, threaded=threaded)
