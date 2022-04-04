@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title></title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+  </head>
+  <style></style>
+  <body class="blue lighten-2 white-text">
+    <nav>
+      <div class="nav-wrapper blue">
+        <a class="brand-logo" style="padding-left: 20px"
+          ><i class="material-icons right">headphones</i>Music Recommender</a
+        >
+      </div>
+    </nav>
+    <div class="container">
+        <div style="margin-top: 5rem" class="card blue darken-4">
+            <div class="card-content">
+            <h2 class="center-align">Music Preferences</h2>
+            <form>
+            <div class="row">
+                <p>
+                Enter the earliest year and latest year you're okay with recieving
+                music from. The earliest year is 1950 and the latest is 2022
+                </p>
+                <div class="input-field col s6">
+                <input id="first_name" type="text" class="validate" />
+                <label for="first_name">Earliest Year</label>
+                </div>
+                <div class="input-field col s6">
+                <input id="last_name" type="text" class="validate" />
+                <label for="last_name">Latest Year</label>
+                </div>
+            </div>
+            <div class="row">
+                <p>Enter how danceable you want the songs to be from 0 - 100</p>
+                <div class="input-field col s12">
+                <input id="Danceability" class="validate" />
+                <label for="Danceability">Danceability</label>
+                </div>
+            </div>
+            <div class="row">
+                <p>Enter how acoustic you want the songs to be from 0 - 100</p>
+
+                <div class="input-field col s12">
+                <input id="Acousticness" class="validate" />
+                <label for="Acousticness">Acousticness</label>
+                </div>
+            </div>
+            <div class="row">
+                <p>Enter how energetic you want the songs to be from 0 - 100</p>
+
+                <div class="input-field col s12">
+                <input id="Energy" class="validate" />
+                <label for="Energy">Energy</label>
+                </div>
+            </div>
+            <div class="switch">
+                <p>Are you okay with recieving explicit suggestions?</p>
+
+                <label>
+                No Explicit
+                <input type="checkbox" />
+                <span class="lever"></span>
+                Explicit OK
+                </label>
+            </div>
+            <div style="padding-top: 1rem">
+                <button
+                class="btn waves-effect waves-light"
+                type="submit"
+                name="action"
+                >
+                Submit
+                <i class="material-icons right">send</i>
+                </button>
+            </div>
+            </form>
+        </div>
+    </div>
+  </body>
+</html>
