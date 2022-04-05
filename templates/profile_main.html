@@ -30,13 +30,33 @@
         <div class="card-content">
           <div class="row"><h3>Profile</h3></div>
           <p>Hi {{first_name}}, here are your recommendations:</p>
-          <p>Email:</p>
-          <div class="row"><h3>Recommendations</h3></div>
+          <table>
+            <thead>
+              <tr>
+                  <th>Name</th>
+                  <th>Artist</th>
+                  <th>Album</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for n in songs %}
+                  <tr>
+                    <td>{{n[0]}}</td>
+                    <td>{{n[1]}}</td>
+                    <td>{{n[2]}}</td>
+                    <td>{{n[3]}}</td>
+                  </tr>
+              {% endfor %}
+
+            </tbody>
+          </table>
+
           <div class="row">
             <h3>Friends</h3>
             Friends
-            <form>
-              <input type="text" name="username" placeholder="Add Friend" />
+            <form method="POST" action="/add_friend">
+              <input type="text" name="friends_username" placeholder="Add Friend" />
+              <input type="text" name="username" value="{{user_id}}" hidden />
               <input class="waves-effect waves-light btn-small" type="submit" value="Add"></input>
             </form>
           </div>
