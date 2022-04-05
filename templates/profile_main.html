@@ -1,40 +1,47 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title></title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+  </head>
+  <style></style>
 
-<head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title></title>
-  <meta name="description" content="" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-</head>
-<style></style>
-
-<body class="blue lighten-2 white-text">
-  <nav>
-    <div class="nav-wrapper blue">
-      <a class="brand-logo" style="padding-left: 20px"><i class="material-icons right">headphones</i>Music
-        Recommender</a>
-    </div>
-  </nav>
-  <div class="container">
-    UDAI UDAI
-
-    <div style="margin-top: 5rem" class="card blue darken-4">
-      <div class="card-content">
-        <div class="row">Profile</div>
-        <div class="row">Recommendations</div>
-        <div class="row">
-          Friends
-          <form>
-            <input type="text" name="username" placeholder="Add Friend" />
-          </form>
+  <body class="blue lighten-2 white-text">
+    <nav>
+      <div class="nav-wrapper blue">
+        <a class="brand-logo" style="padding-left: 20px"
+          ><i class="material-icons right">headphones</i>Music Recommender</a
+        >
+      </div>
+    </nav>
+    <div class="container">
+      <div style="margin-top: 5rem" class="card blue darken-4">
+        <div class="card-content">
+          <div class="row"><h3>Profile</h3></div>
+          <p>Hi {{first_name}}, here are your recommendations:</p>
+          <p>Email:</p>
+          <div class="row"><h3>Recommendations</h3></div>
+          <div class="row">
+            <h3>Friends</h3>
+            Friends
+            <form>
+              <input type="text" name="username" placeholder="Add Friend" />
+              <input class="waves-effect waves-light btn-small" type="submit" value="Add"></input>
+            </form>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

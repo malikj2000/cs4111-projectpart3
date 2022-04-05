@@ -32,42 +32,34 @@
         <div style="margin-top: 5rem" class="card blue darken-4">
             <div class="card-content">
             <h2 class="center-align">Music Preferences</h2>
-            <form>
-            <div class="row">
+            <form method="POST" action="/submit_music_preference_survey">
+              <p>Email:</p>
+              <input type="text" name="email">
+              <div class="row">
                 <p>
                 Enter the earliest year and latest year you're okay with recieving
                 music from. The earliest year is 1950 and the latest is 2022
                 </p>
-                <div class="input-field col s6">
-                <input id="first_name" type="text" class="validate" />
-                <label for="first_name">Earliest Year</label>
-                </div>
-                <div class="input-field col s6">
-                <input id="last_name" type="text" class="validate" />
-                <label for="last_name">Latest Year</label>
-                </div>
+                <input name="earliest_year" type="text" placeholder="earlieast year"/>
+                <input name="latest_year" type="text" placeholder="latest year"/>
             </div>
             <div class="row">
                 <p>Enter how danceable you want the songs to be from 0 - 100</p>
                 <div class="input-field col s12">
-                <input id="Danceability" class="validate" />
-                <label for="Danceability">Danceability</label>
+                <input name="Danceability" class="validate" />
                 </div>
             </div>
             <div class="row">
                 <p>Enter how acoustic you want the songs to be from 0 - 100</p>
-
                 <div class="input-field col s12">
-                <input id="Acousticness" class="validate" />
-                <label for="Acousticness">Acousticness</label>
+                <input name="Acousticness" class="validate" />
                 </div>
             </div>
             <div class="row">
                 <p>Enter how energetic you want the songs to be from 0 - 100</p>
 
                 <div class="input-field col s12">
-                <input id="Energy" class="validate" />
-                <label for="Energy">Energy</label>
+                <input name="Energy" class="validate" />
                 </div>
             </div>
             <div class="switch">
@@ -75,7 +67,7 @@
 
                 <label>
                 No Explicit
-                <input type="checkbox" />
+                <input type="checkbox" name="explicit"/>
                 <span class="lever"></span>
                 Explicit OK
                 </label>

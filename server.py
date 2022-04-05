@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 """
 Go to http://localhost:8111 in your browser.
 
@@ -11,6 +12,7 @@ import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response
+from random import randrange
 
 tmpl_dir = os.path.join(os.path.dirname(
     os.path.abspath(__file__)), 'templates')
@@ -33,7 +35,7 @@ engine = create_engine(DATABASEURI)
 @app.before_request
 def before_request():
     """
-    This function is run at the beginning of every web request 
+    This function is run at the beginning of every web request
     (every time you enter an address in the web browser).
     We use it to setup a database connection that can be used throughout the request.
 
@@ -131,25 +133,42 @@ def index():
 def landing():
     return render_template("landing.html")
 
+
 @app.route('/landing_fail')
 def landing_fail():
     return render_template("landing_fail.html")
+
 
 @app.route('/create_account')
 def create_account():
     return render_template("create_account.html")
 
-@app.route('/survey_page.html')
+
+@app.route('/survey_page')
 def survey_page():
+    print("called")
     return render_template("survey_page.html")
 
+
 @app.route('/profile_main.html')
-def profile_main():
-    return render_template("profile_main.html")
+def profile_main(user_id):
+    context = {}
+    # get first name last name and add it to context
+    cursor = g.conn.execute(
+        "SELECT first_name, last_name FROM users WHERE user_id = %s", user_id)
+    for result in cursor:
+        context['first_name'] = result['first_name']
+        context['last_name'] = result['last_name']
+    cursor.close()
+
+    # get user's friend list
+
+    return render_template("profile_main.html", **context)
 
 # Example of adding new data to the database
 
-@app.route('/login', methods=['POST'])
+
+@ app.route('/login', methods=['POST'])
 def login():
     email = request.form['email']
     password = request.form['password']
@@ -163,22 +182,68 @@ def login():
         for result in cursor:
             if result['user_password'] == password:
                 print("password correct")
-                #get user id
+                # get user id
                 user_id = result['user_id']
-                #check if the user has done survey
-                cursor = g.conn.execute("SELECT * FROM inputs WHERE user_id = %s", user_id)
+                cursor = g.conn.execute(
+                    "SELECT * FROM inputs WHERE user_id = %s", user_id)
                 if cursor.rowcount == 0:
-                    print("survey done")
-                    return render_template("profile_main.html", user_id=user_id)
-                else:
                     print("survey not done")
                     return render_template("survey_page.html", user_id=user_id)
+                else:
+                    print("survey done")
+                    return profile_main(user_id)
             else:
                 print("password incorrect")
                 return render_template("landing_fail.html")
     return redirect('/')
 
-@app.route('/add', methods=['POST'])
+# example data
+# ImmutableMultiDict([('email', '1'), ('earliest_year', '23'), ('latest_year', '123'),
+# ('Danceability', '123'), ('Acousticness', '123'), ('Energy', '123'),
+# ('explicit', 'on'), ('action', '')])
+
+
+@app.route('/submit_music_preference_survey', methods=['POST'])
+def submit_music_preference_survey():
+    print("creating preference list")
+    print(request.form)
+    email = request.form['email']
+
+    # get user_id based on email
+    cursor = g.conn.execute(
+        "SELECT user_id from users WHERE email = %s", email)
+    user_id = None
+    for result in cursor:
+        user_id = result['user_id']
+    print("WORKING ON user_id {}".format(user_id))
+
+    # insert data into quiz_answers table commented out for now
+    # cursor = g.conn.execute("""INSERT INTO quiz_answers(quiz_result_id, max_year, min_year, danceability_preference, acousticness, is_explicit, energy )
+    # VALUES({}, {}, {}, {}, {}, {}, {})""".format(randrange(100000), request.form['earliest_year'], request.form['latest_year'], request.form['Danceability'], request.form['Acousticness'], 1, request.form['Energy']))
+
+    # check if user has already submitted a survey
+    cursor = g.conn.execute(
+        "SELECT * from recommendation_list NATURAL JOIN(SELECT user_id from users WHERE email = %s) as id", email)
+    if cursor.rowcount == 0:
+        # user hasn't submitted a form yet
+        print(request.form)
+        # select all songs that match the user's preferences
+        cursor = g.conn.execute("""SELECT * FROM songs WHERE release_year >= {} AND release_year <= {}
+        AND danceability >= {} - 0.2 AND danceability <= {} + 0.2
+        AND acousticness >= {} - 0.2 AND acousticness <= {} + 0.2
+        AND energy >= {} - 0.2 AND energy <= {} + 0.2
+        """.format(request.form['earliest_year'], request.form['latest_year'], request.form['Danceability'], request.form['Danceability'], request.form['Acousticness'], request.form['Acousticness'], request.form['Energy'], request.form['Energy'])
+        )
+        for song in cursor:
+            # get recommendation list id
+
+            # insert song and recommendation list id into contains song table
+            # insert album id and recommendationlist id into contains album table
+            print(song)
+    return redirect('/')
+
+
+@ app.route('/add', methods=['POST'])
 def add():
     name = request.form['name']
     g.conn.execute('INSERT INTO test VALUES (NULL, ?)', name)
@@ -188,14 +253,14 @@ def add():
 if __name__ == "__main__":
     import click
 
-    @click.command()
-    @click.option('--debug', is_flag=True)
-    @click.option('--threaded', is_flag=True)
-    @click.argument('HOST', default='0.0.0.0')
-    @click.argument('PORT', default=8111, type=int)
+    @ click.command()
+    @ click.option('--debug', is_flag=True)
+    @ click.option('--threaded', is_flag=True)
+    @ click.argument('HOST', default='0.0.0.0')
+    @ click.argument('PORT', default=8111, type=int)
     def run(debug, threaded, host, port):
         HOST, PORT = host, port
         print("running on %s:%d" % (HOST, PORT))
-        app.run(host=HOST, port=PORT, debug=debug, threaded=threaded)
+        app.run(host=HOST, port=PORT, debug=True, threaded=threaded)
 
     run()
