@@ -218,13 +218,21 @@ def submit_music_preference_survey():
     print("WORKING ON user_id {}".format(user_id))
 
     # insert data into quiz_answers table commented out for now
-    # cursor = g.conn.execute("""INSERT INTO quiz_answers(quiz_result_id, max_year, min_year, danceability_preference, acousticness, is_explicit, energy )
-    # VALUES({}, {}, {}, {}, {}, {}, {})""".format(randrange(100000), request.form['earliest_year'], request.form['latest_year'], request.form['Danceability'], request.form['Acousticness'], 1, request.form['Energy']))
+    cursor = g.conn.execute("""INSERT INTO quiz_answers(quiz_result_id, max_year, min_year, danceability_preference, acousticness, is_explicit, energy )
+    VALUES({}, {}, {}, {}, {}, {}, {})""".format(randrange(100000), request.form['earliest_year'], request.form['latest_year'], request.form['Danceability'], request.form['Acousticness'], 1, request.form['Energy']))
 
     # check if user has already submitted a survey
     cursor = g.conn.execute(
         "SELECT * from recommendation_list NATURAL JOIN(SELECT user_id from users WHERE email = %s) as id", email)
     if cursor.rowcount == 0:
+        # generate unique recommendation list id
+        recommendation_list_id = 5
+        while(g.conn.execute("SELECT * from recommendation_list WHERE recommendation_list_id = %s", recommendation_list_id).rowcount == 0):
+            recommendation_list_id = randrange(100000)
+
+        # insert user id and recommendation list id into receives table
+        cursor = g.conn.execute("""INSERT INTO receives(user_id, recommendation_list_id) VALUES({}, {})""".format(
+            user_id, recommendation_list_id))
         # user hasn't submitted a form yet
         print(request.form)
         # select all songs that match the user's preferences
@@ -234,12 +242,11 @@ def submit_music_preference_survey():
         AND energy >= {} - 0.2 AND energy <= {} + 0.2
         """.format(request.form['earliest_year'], request.form['latest_year'], request.form['Danceability'], request.form['Danceability'], request.form['Acousticness'], request.form['Acousticness'], request.form['Energy'], request.form['Energy'])
         )
-        for song in cursor:
-            # get recommendation list id
 
+        for song in cursor:
             # insert song and recommendation list id into contains song table
-            # insert album id and recommendationlist id into contains album table
-            print(song)
+            cursor = g.conn.execute("""INSERT INTO contains_song(recommendation_list_id, song_id) VALUES({}, {})""".format(
+                recommendation_list_id, song['song_id']))
     return redirect('/')
 
 
