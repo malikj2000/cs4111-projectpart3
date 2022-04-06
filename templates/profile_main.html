@@ -17,16 +17,16 @@
   </head>
   <style></style>
 
-  <body class="blue lighten-2 white-text">
+  <body class="grey darken-1">
     <nav>
-      <div class="nav-wrapper blue">
+      <div class="nav-wrapper green darken-2">
         <a class="brand-logo" style="padding-left: 20px"
           ><i class="material-icons right">headphones</i>Music Recommender</a
         >
       </div>
     </nav>
-    <div class="container">
-      <div style="margin-top: 5rem" class="card blue darken-4">
+    <div class="container z-depth-5">
+      <div style="margin-top: 5rem" class="card grey lighten-2">
         <div class="card-content">
           <div class="row"><h3>Profile</h3></div>
           <p>Hi {{first_name}}, here are your recommendations:</p>
@@ -36,6 +36,8 @@
                   <th>Name</th>
                   <th>Artist</th>
                   <th>Album</th>
+                  <th>Release Year</th>
+
               </tr>
             </thead>
             <tbody>
@@ -53,11 +55,24 @@
 
           <div class="row">
             <h3>Friends</h3>
-            Friends
+            {% if friends %}
+            <ul class="collection">
+
+              {% for n in friends %}
+                <li class="collection-item grey lighten-3">                      {{n[0]}}
+                  {{n[1]}}</li>
+
+              {% endfor %}
+            </ul>
+
+            {% else %}
+              <p>You have no friends yet add some below!</p>
+            {% endif %}
+
             <form method="POST" action="/add_friend">
-              <input type="text" name="friends_username" placeholder="Add Friend" />
-              <input type="text" name="username" value="{{user_id}}" hidden />
-              <input class="waves-effect waves-light btn-small" type="submit" value="Add"></input>
+              <input type="text" name="friend_username" placeholder="Add Friend" />
+              <input type="text" name="user_id" value="{{user_id}}" hidden />
+              <input class="waves-effect waves-light green btn-small" type="submit" value="Add"></input>
             </form>
           </div>
         </div>

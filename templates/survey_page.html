@@ -19,18 +19,22 @@
       rel="stylesheet"
     />
   </head>
-  <style></style>
-  <body class="blue lighten-2 white-text">
+  <style>
+    ::-webkit-input-placeholder { /* WebKit browsers */
+        color:    black;
+         opacity: 1 !important;
+    }
+    </style>  <body class="grey darken-1">
     <nav>
-      <div class="nav-wrapper blue">
+      <div class="nav-wrapper green darken-2">
         <a class="brand-logo" style="padding-left: 20px"
           ><i class="material-icons right">headphones</i>Music Recommender</a
         >
       </div>
     </nav>
-    <div class="container">
-        <div style="margin-top: 5rem" class="card blue darken-4">
-            <div class="card-content">
+    <div class="container z-depth-5">
+      <div style="margin-top: 5rem" class="card grey lighten-2">
+        <div class="card-content">
             <h2 class="center-align">Music Preferences</h2>
             <form method="POST" action="/submit_music_preference_survey">
               <p>Email:</p>
@@ -44,19 +48,19 @@
                 <input name="latest_year" type="text" placeholder="latest year"/>
             </div>
             <div class="row">
-                <p>Enter how danceable you want the songs to be from 0 - 100</p>
+                <p>Enter how danceable you want the songs to be from 0 - 1 as a float</p>
                 <div class="input-field col s12">
                 <input name="Danceability" class="validate" />
                 </div>
             </div>
             <div class="row">
-                <p>Enter how acoustic you want the songs to be from 0 - 100</p>
+                <p>Enter how acoustic you want the songs to be from 0 - 1 as a float</p>
                 <div class="input-field col s12">
                 <input name="Acousticness" class="validate" />
                 </div>
             </div>
             <div class="row">
-                <p>Enter how energetic you want the songs to be from 0 - 100</p>
+                <p>Enter how energetic you want the songs to be from 0 - 1 as a float</p>
 
                 <div class="input-field col s12">
                 <input name="Energy" class="validate" />
@@ -74,8 +78,7 @@
             </div>
             <div style="padding-top: 1rem">
                 <button
-                class="btn waves-effect waves-light"
-                type="submit"
+                class="waves-effect waves-light green btn-small"                type="submit"
                 name="action"
                 >
                 Submit

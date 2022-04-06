@@ -6,8 +6,5 @@ Structure
    1. If they haven't filled in quiz answers yet we redirect them to that first
 
 Current todo:
-Check and finalize the submission of music preferences
-Add in Malik's code
-Do add friend logic
-Check and finalize that it's pulling the correct user id
-Finish the profile_main page and pulling in the data
+change gender in create account
+update color scheme

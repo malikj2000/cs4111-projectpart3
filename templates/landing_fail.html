@@ -11,26 +11,29 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 </head>
 <style>
-
+::-webkit-input-placeholder { /* WebKit browsers */
+    color:    black;
+     opacity: 1 !important;
+}
 </style>
 
-<body class="blue lighten-2 white-text">
+<body class="grey darken-1 black-text">
   <nav>
-    <div class="nav-wrapper blue">
+    <div class="nav-wrapper green darken-2">
       <a class="brand-logo" style="padding-left: 20px"><i class="material-icons right">headphones</i>Music
         Recommender</a>
     </div>
   </nav>
-  <div class="container">
-    <div style="margin-top: 5rem" class="card blue darken-4">
+  <div class="container z-depth-5">
+    <div style="margin-top: 5rem" class="card grey lighten-2">
       <div class="card-content">
         <form class="card-content" method="POST" action="/login">
           <input type="text" name="email" placeholder="email">
           <input type="password" name="password" placeholder="Password">
           <strong class="red-text accent-1">That account does not exist</strong></br>
 
-          <input class="waves-effect waves-light btn-small" type="submit" value="Login"></input>
-          <a class="waves-effect waves-light btn-small" href="/create_account">Create Account</a>
+          <input class="waves-effect waves-light green btn-small" type="submit" value="Login"></input>
+          <a class="waves-effect waves-light green btn-small" href="/create_account">Create Account</a>
         </form>
       </div>
     </div>
