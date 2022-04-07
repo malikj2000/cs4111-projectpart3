@@ -1,0 +1,8 @@
+INSERT INTO songs(song_id, title, artist, release_year, album, danceability, acousticness, energy) VALUES (2365, 'Sunny', 'Boney M.', 1976, 'Take the Heat off me', 0.8, 0.3, 0.64);
+INSERT INTO songs(song_id, title, artist, release_year, album, danceability, acousticness, energy) VALUES (2366, '20 Min', 'Lil Uzi Vert', 2020, 'Luv Is Rage 2 (Deluxe)', 0.65, 0.4, 0.6);
+INSERT INTO songs(song_id, title, artist, release_year, album, danceability, acousticness, energy) VALUES (2367, 'Get Down Saturday Night', 'Oliver Cheatham', 1984, 'Disco Essentials', 0.86, 0.56, 0.82);
+INSERT INTO songs(song_id, title, artist, release_year, album, danceability, acousticness, energy) VALUES (2368, 'Kids', 'MGMT', 2014, 'Oracular Spectacular', 0.56, 0.76, 0.42);
+INSERT INTO songs(song_id, title, artist, release_year, album, danceability, acousticness, energy) VALUES (2369, 'Szikra', 'Kornel', 2011, 'Szikra Yes', 0.5, 0.6, 0.35);
+INSERT INTO songs(song_id, title, artist, release_year, album, danceability, acousticness, energy) VALUES (2370, 'I Shot The Sheriff', 'The Wailers', 1988, 'Burnin', 0.4, 0.7, 0.5);
+INSERT INTO songs(song_id, title, artist, release_year, album, danceability, acousticness, energy) VALUES (2371, 'Winona', 'DJ BORING', 2015, 'Winona', 0.9, 0.3, 0.4);
+INSERT INTO songs(song_id, title, artist, release_year, album, danceability, acousticness, energy) VALUES (2372, 'Music Sounds Better With You', 'Neil Frances', 2005, 'Clubhouse', 0.34, 0.6, 0.22);

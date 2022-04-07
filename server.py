@@ -227,10 +227,10 @@ def submit_music_preference_survey():
     # insert data into quiz_answers table commented out for now
     cursor = g.conn.execute("""INSERT INTO quiz_answers(quiz_result_id, max_year, min_year, danceability_preference, acousticness, is_explicit, energy )
     VALUES(%s, %s, %s, %s, %s, %s, %s)""", (quiz_result_id, latest_year, earliest_year, danceability, acousticness, 1, energy))
-    
+
     # insert data into inputs table
     cursor = g.conn.execute(
-        "INSERT INTO inputs(user_id, quiz_result_id) VALUES({}, {})", (user_id, quiz_result_id))
+        "INSERT INTO inputs(user_id, quiz_result_id) VALUES({}, {})".format(user_id, quiz_result_id))
 
     # check if user has already submitted a survey
 
@@ -241,7 +241,8 @@ def submit_music_preference_survey():
     print("hi")
 
     # insert data into recommendation_list table
-    cursor = g.conn.execute("""INSERT INTO recommendation_list(recommendation_list_id, user_id) VALUES(%s, %s)""", (recommendation_list_id, user_id))
+    cursor = g.conn.execute(
+        """INSERT INTO recommendation_list(recommendation_list_id, user_id) VALUES(%s, %s)""", (recommendation_list_id, user_id))
     print("yo")
 
     # select all songs that match the user's preferences
@@ -251,11 +252,10 @@ def submit_music_preference_survey():
     AND energy >= %s - 0.2 AND energy <= %s + 0.2
     """, (earliest_year, latest_year, danceability, danceability, acousticness, acousticness, energy, energy))
 
-    print("uncle")
-
     for song in cursor:
         # insert song and recommendation list id into contains song table
-        cursor = g.conn.execute("""INSERT INTO contains_song(recommendation_list_id, song_id) VALUES(%s, %s)""", (recommendation_list_id, song['song_id']))
+        cursor = g.conn.execute(
+            """INSERT INTO contains_song(recommendation_list_id, song_id) VALUES(%s, %s)""", (recommendation_list_id, song['song_id']))
     print("songs selected")
 
     # select all albums that match the user's preferences
@@ -269,11 +269,13 @@ def submit_music_preference_survey():
 
     for album in cursor:
         # insert song and recommendation list id into contains song table
-        cursor = g.conn.execute("""INSERT INTO contains_album(recommendation_list_id, song_id) VALUES(%s, %s)""", (recommendation_list_id, album['album_id']))
+        cursor = g.conn.execute("""INSERT INTO contains_album(recommendation_list_id, song_id) VALUES(%s, %s)""",
+                                (recommendation_list_id, album['album_id']))
     print('added')
 
     # insert user id and recommendation list id into receives table
-    cursor = g.conn.execute("""INSERT INTO receives(user_id, recommendation_list_id) VALUES(%s, %s)""",(user_id, recommendation_list_id))
+    cursor = g.conn.execute(
+        """INSERT INTO receives(user_id, recommendation_list_id) VALUES(%s, %s)""", (user_id, recommendation_list_id))
 
     return profile_main(user_id)
 
@@ -281,7 +283,7 @@ def submit_music_preference_survey():
 @ app.route('/add', methods=['POST'])
 def add():
     name = request.form['name']
-    g.conn.execute('INSERT INTO test VALUES (NULL, %s)', (name))
+    g.conn.execute('INSERT INTO test VALUES (NULL, {})'.format(name))
     return redirect('/')
 
 
@@ -292,7 +294,7 @@ if __name__ == "__main__":
     @ click.option('--debug', is_flag=True)
     @ click.option('--threaded', is_flag=True)
     @ click.argument('HOST', default='0.0.0.0')
-    @ click.argument('PORT', default=8111, type=int)
+    @ click.argument('PORT', default=8112, type=int)
     def run(debug, threaded, host, port):
         HOST, PORT = host, port
         print("running on %s:%d" % (HOST, PORT))
