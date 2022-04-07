@@ -88,7 +88,7 @@ def profile_main(user_id):
     context = {}
     # get first name last name and add it to context
     cursor = g.conn.execute(
-        "SELECT first_name, last_name FROM users WHERE user_id = %s", user_id)
+        "SELECT first_name, last_name FROM users WHERE user_id = %s", (user_id,))
     for result in cursor:
         context['first_name'] = result['first_name']
         context['last_name'] = result['last_name']
@@ -96,7 +96,7 @@ def profile_main(user_id):
 
     # get a user's song recommendations
     cursor = g.conn.execute(
-        """SELECT title, artist, album, release_year FROM recommendation_list NATURAL JOIN contains_song NATURAL JOIN songs WHERE user_id = %s""", user_id)
+        """SELECT title, artist, album, release_year FROM recommendation_list NATURAL JOIN contains_song NATURAL JOIN songs WHERE user_id = %s""", (user_id,))
     # add songs to context
     songs = []
     # generate dictionary for each song
@@ -107,7 +107,7 @@ def profile_main(user_id):
 
     # get user's friend list
     cursor = g.conn.execute(
-        """ SELECT first_name, last_name, user_id FROM users WHERE user_id IN (SELECT friend_id FROM friends_with WHERE user_id = %s)""", user_id)
+        """ SELECT first_name, last_name, user_id FROM users WHERE user_id IN (SELECT friend_id FROM friends_with WHERE user_id = %s)""", (user_id,))
     friends = []
     for result in cursor:
         friends.append(result)
@@ -131,7 +131,7 @@ def add_friend():
     friend_username = request.form['friend_username']
     # check if friend exists
     cursor = g.conn.execute(
-        """ SELECT user_id FROM users WHERE email = %s""", friend_username)
+        """ SELECT user_id FROM users WHERE email = %s""", (friend_username,))
     if cursor.rowcount == 0:
         print("friend not found")
         return profile_main(user_id)
@@ -144,13 +144,13 @@ def add_friend():
         return profile_main(user_id)
     # check if user is already friends with friend
     cursor = g.conn.execute(
-        """ SELECT * FROM friends_with WHERE user_id = %s AND friend_id = %s""", user_id, friend_id)
+        """ SELECT * FROM friends_with WHERE user_id = %s AND friend_id = %s""", (user_id, friend_id))
     if cursor.rowcount != 0:
         print("already friends")
         return profile_main(user_id)
     # add friend to friends_with table
     g.conn.execute(
-        """ INSERT INTO friends_with (user_id, friend_id) VALUES (%s, %s)""", user_id, friend_id)
+        """ INSERT INTO friends_with (user_id, friend_id) VALUES (%s, %s)""", (user_id, friend_id))
 
     return profile_main(user_id)
 
@@ -160,7 +160,7 @@ def login():
     email = request.form['email']
     password = request.form['password']
     print("logging in {} {}".format(email, password))
-    cursor = g.conn.execute("SELECT * FROM users WHERE email = %s", email)
+    cursor = g.conn.execute("SELECT * FROM users WHERE email = %s", (email,))
     if cursor.rowcount == 0:
         print("no user found")
         return redirect("landing_fail")
@@ -172,7 +172,7 @@ def login():
                 # get user id
                 user_id = result['user_id']
                 cursor = g.conn.execute(
-                    "SELECT * FROM inputs WHERE user_id = %s", user_id)
+                    "SELECT * FROM inputs WHERE user_id = %s", (user_id,))
                 if cursor.rowcount == 0:
                     print("survey not done")
                     return render_template("survey_page.html", user_id=user_id)
@@ -196,7 +196,7 @@ def create_account_post():
     gender = 1 if request.form['gender'] == "M" else 0
     print("creating account with user: {} and password: {}".format(username, password))
     cursor = g.conn.execute("INSERT INTO users VALUES (%s, %s, %s, %s, %s, %s, %s, 0)",
-                            user_id, first_name, last_name, username, dob, password, gender)
+                            (user_id, first_name, last_name, username, dob, password, gender))
     print("account created")
     return render_template("survey_page.html")
 
@@ -213,19 +213,24 @@ def submit_music_preference_survey():
 
     # get user_id based on email
     cursor = g.conn.execute(
-        "SELECT user_id from users WHERE email = %s", email)
+        "SELECT user_id from users WHERE email = %s", (email,))
     user_id = None
     for result in cursor:
         user_id = result['user_id']
     print("WORKING ON user_id {}".format(user_id))
     quiz_result_id = randrange(100000)
+    latest_year = request.form['latest_year']
+    earliest_year = request.form['earliest_year']
+    danceability = request.form['Danceability']
+    acousticness = request.form['Acousticness']
+    energy = request.form['Energy']
     # insert data into quiz_answers table commented out for now
     cursor = g.conn.execute("""INSERT INTO quiz_answers(quiz_result_id, max_year, min_year, danceability_preference, acousticness, is_explicit, energy )
-    VALUES({}, {}, {}, {}, {}, {}, {})""".format(quiz_result_id, request.form['latest_year'], request.form['earliest_year'], request.form['Danceability'], request.form['Acousticness'], 1, request.form['Energy']))
-
+    VALUES(%s, %s, %s, %s, %s, %s, %s)""", (quiz_result_id, latest_year, earliest_year, danceability, acousticness, 1, energy))
+    
     # insert data into inputs table
     cursor = g.conn.execute(
-        "INSERT INTO inputs(user_id, quiz_result_id) VALUES({}, {})".format(user_id, quiz_result_id))
+        "INSERT INTO inputs(user_id, quiz_result_id) VALUES({}, {})", (user_id, quiz_result_id))
 
     # check if user has already submitted a survey
 
@@ -236,45 +241,39 @@ def submit_music_preference_survey():
     print("hi")
 
     # insert data into recommendation_list table
-    cursor = g.conn.execute("""INSERT INTO recommendation_list(recommendation_list_id, user_id) VALUES({}, {})""".format(
-        recommendation_list_id, user_id))
+    cursor = g.conn.execute("""INSERT INTO recommendation_list(recommendation_list_id, user_id) VALUES(%s, %s)""", (recommendation_list_id, user_id))
     print("yo")
 
     # select all songs that match the user's preferences
-    cursor = g.conn.execute("""SELECT * FROM songs WHERE release_year >= {} AND release_year <= {}
-    AND danceability >= {} - 0.2 AND danceability <= {} + 0.2
-    AND acousticness >= {} - 0.2 AND acousticness <= {} + 0.2
-    AND energy >= {} - 0.2 AND energy <= {} + 0.2
-    """.format(request.form['earliest_year'], request.form['latest_year'], request.form['Danceability'], request.form['Danceability'], request.form['Acousticness'], request.form['Acousticness'], request.form['Energy'], request.form['Energy'])
-    )
+    cursor = g.conn.execute("""SELECT * FROM songs WHERE release_year >= %s AND release_year <= %s
+    AND danceability >= %s - 0.2 AND danceability <= %s + 0.2
+    AND acousticness >= %s - 0.2 AND acousticness <= %s + 0.2
+    AND energy >= %s - 0.2 AND energy <= %s + 0.2
+    """, (earliest_year, latest_year, danceability, danceability, acousticness, acousticness, energy, energy))
 
     print("uncle")
 
     for song in cursor:
         # insert song and recommendation list id into contains song table
-        cursor = g.conn.execute("""INSERT INTO contains_song(recommendation_list_id, song_id) VALUES({}, {})""".format(
-            recommendation_list_id, song['song_id']))
+        cursor = g.conn.execute("""INSERT INTO contains_song(recommendation_list_id, song_id) VALUES(%s, %s)""", (recommendation_list_id, song['song_id']))
     print("songs selected")
 
     # select all albums that match the user's preferences
-    cursor = g.conn.execute("""SELECT * FROM albums WHERE release_year >= {} AND release_year <= {}
-    AND danceability >= {} - 0.2 AND danceability <= {} + 0.2
-    AND acousticness >= {} - 0.2 AND acousticness <= {} + 0.2
-    AND energy >= {} - 0.2 AND energy <= {} + 0.2
-    """.format(request.form['earliest_year'], request.form['latest_year'], request.form['Danceability'], request.form['Danceability'], request.form['Acousticness'], request.form['Acousticness'], request.form['Energy'], request.form['Energy'])
-    )
+    cursor = g.conn.execute("""SELECT * FROM albums WHERE release_year >= %s AND release_year <= %s
+    AND danceability >= %s - 0.2 AND danceability <= %s + 0.2
+    AND acousticness >= %s - 0.2 AND acousticness <= %s + 0.2
+    AND energy >= %s - 0.2 AND energy <= %s + 0.2
+    """, (earliest_year, latest_year, danceability, danceability, acousticness, acousticness, energy, energy))
 
     print("albums selected")
 
     for album in cursor:
         # insert song and recommendation list id into contains song table
-        cursor = g.conn.execute("""INSERT INTO contains_album(recommendation_list_id, song_id) VALUES({}, {})""".format(
-            recommendation_list_id, album['album_id']))
+        cursor = g.conn.execute("""INSERT INTO contains_album(recommendation_list_id, song_id) VALUES(%s, %s)""", (recommendation_list_id, album['album_id']))
     print('added')
 
     # insert user id and recommendation list id into receives table
-    cursor = g.conn.execute("""INSERT INTO receives(user_id, recommendation_list_id) VALUES({}, {})""".format(
-        user_id, recommendation_list_id))
+    cursor = g.conn.execute("""INSERT INTO receives(user_id, recommendation_list_id) VALUES(%s, %s)""",(user_id, recommendation_list_id))
 
     return profile_main(user_id)
 
@@ -282,7 +281,7 @@ def submit_music_preference_survey():
 @ app.route('/add', methods=['POST'])
 def add():
     name = request.form['name']
-    g.conn.execute('INSERT INTO test VALUES (NULL, ?)', name)
+    g.conn.execute('INSERT INTO test VALUES (NULL, %s)', (name))
     return redirect('/')
 
 
